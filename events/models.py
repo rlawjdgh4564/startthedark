@@ -3,8 +3,6 @@ from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 from django.db.models.query import QuerySet
 
-# Create your models here.
-
 def today():
 	now = datetime.now()
 	start = datetime.min.replace(year=now.year, month=now.month,
@@ -26,7 +24,6 @@ class EventManager(models.Manager):
 		print "In manager today"
 		return self.get_query_set().today()
 
-#Model's sub class
 class Event(models.Model):
 	description = models.TextField()
 	creation_date = models.DateTimeField(default=datetime.now)
@@ -35,14 +32,12 @@ class Event(models.Model):
 	attendees = models.ManyToManyField(User, through = "Attendance")
 	latest = models.BooleanField(default=True)
 	
-	# link defaults object to our custom manager
 	objects = EventManager()
 
 	def __unicode__(self):
 		return self.description
 	
 	def save(self, **kwargs):
-		#objects is default manager
 		Event.objects.today().filter(latest=True,
 			creator=self.creator).update(latest=False)
 		super(Event, self).save(**kwargs)
